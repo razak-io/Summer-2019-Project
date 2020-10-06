@@ -3,12 +3,11 @@ package com.example.protype_1;
 import java.util.ArrayList;
 
 /**
- *
  * @author murta
  */
 public class PSDAnalysis {
 
-    private  double halfsec = 22050;
+    private double halfsec = 22050;
     private double[] sig;
     private Signal calc;
 
@@ -19,28 +18,30 @@ public class PSDAnalysis {
 
     /**
      * method that downsamples the signal
+     *
      * @param scale
      */
-    public void downsampleSig(int scale){
+    public void downsampleSig(int scale) {
         //System.out.println("Initial Size of halfsec: "+halfsec);
-        double[] res = new double[(sig.length/scale)];
-        for(int i = 0; i < (res.length); i+= 1)
-            res[i] = sig[i*scale];
+        double[] res = new double[(sig.length / scale)];
+        for (int i = 0; i < (res.length); i += 1)
+            res[i] = sig[i * scale];
         sig = res;
-        halfsec = (double)((int)halfsec/scale);
+        halfsec = (double) ((int) halfsec / scale);
         //System.out.println("Final Size of halfsec: "+halfsec);
 
     }
 
     /**
      * method that returns a 2D matrix image of the data
+     *
      * @return
      */
     public spectogram getSpec() {
         spectogram spec = new spectogram();
         ArrayList<Double> arr = new ArrayList<Double>();
         int i = 0;
-        while ((i < sig.length) && (i + halfsec/2 < sig.length)) {
+        while ((i < sig.length) && (i + halfsec / 2 < sig.length)) {
             i = populate(arr, i);
             spec.add(calc.getPSD(convtodouble(arr)));
         }
@@ -52,8 +53,8 @@ public class PSDAnalysis {
         int sz = in.size();
 
 
-        if (i + halfsec/2 > sig.length) {
-            System.out.println("Index i: "+i+" and signal Length: " + sig.length);
+        if (i + halfsec / 2 > sig.length) {
+            System.out.println("Index i: " + i + " and signal Length: " + sig.length);
             System.exit(1);
         }
 
@@ -70,11 +71,11 @@ public class PSDAnalysis {
 
         while (in.size() < halfsec) {
             in.add(sig[i++]);
-            if(i >= sig.length)break;
+            if (i >= sig.length) break;
         }
 
         while (in.size() < halfsec) {
-            in.add((double)0);
+            in.add((double) 0);
             i++;
         }
 
@@ -106,23 +107,25 @@ class spectogram {
 
     /**
      * appends data to the list
+     *
      * @param in
      */
     public void add(double[] in) {
-        data.add(0,in);
+        data.add(0, in);
 
     }
 
     /**
      * converts the list to a 2D array
+     *
      * @return 2D array representing the spectrum
      */
     public double[][] getMatrix() {
         int row = data.size();
         int col = data.get(0).length;
-        double[][] array = new double[row][col/2];
+        double[][] array = new double[row][col / 2];
         for (int i = 0; i < row; i++) {
-            for (int j = 0; j < col/2; j++) {
+            for (int j = 0; j < col / 2; j++) {
                 array[i][j] = data.get(i)[j];
             }
         }
@@ -130,35 +133,37 @@ class spectogram {
 
     }
 
-    public ArrayList retData(){
+    public ArrayList retData() {
         return data;
     }
 
     /**
      * calculate the average power of each row of the spectrum
+     *
      * @return array of average power
      */
-    public double[] getAvgPower_Row(){
+    public double[] getAvgPower_Row() {
         double[] avgPw = new double[data.size()];
-        for (int i = 0; i < data.size();i++)
+        for (int i = 0; i < data.size(); i++)
             avgPw[i] = calc.power(data.get(i));
         return avgPw;
     }
 
     /**
      * calculate the average power of each column of the spectrum
+     *
      * @return array of average power
      */
-    public double[] getAvgPower_Col(){
+    public double[] getAvgPower_Col() {
         double[] avgPw = new double[data.get(0).length];
-        for (int i = 0; i < data.get(0).length;i++)
+        for (int i = 0; i < data.get(0).length; i++)
             avgPw[i] = getAvgPower_Col(i);
         return avgPw;
     }
 
-    private double getAvgPower_Col(int col){
+    private double getAvgPower_Col(int col) {
         double[] temp = new double[data.size()];
-        for(int i = 0 ; i < data.size();i++){
+        for (int i = 0; i < data.size(); i++) {
             temp[i] = data.get(i)[col];
         }
         return calc.power(temp);
@@ -168,17 +173,18 @@ class spectogram {
 
     /**
      * converts the matrix to a string
+     *
      * @return the string representation of the matrix
      */
     public String toString() {
         System.out.println("Matrix Size : "
-                + data.size()+" x "+data.get(0).length);
+                + data.size() + " x " + data.get(0).length);
         String mat = "";
         int row = data.size();
         int col = data.get(0).length;
         for (int i = 0; i < row; i++) {
             for (int j = 0; j < col; j++) {
-                mat +=(fmt(data.get(i)[j]) + "\t");
+                mat += (fmt(data.get(i)[j]) + "\t");
             }
             mat += "\n";
         }
@@ -187,16 +193,16 @@ class spectogram {
 
     }
 
-    private String fmt(double d)
-    {
-        if(d == (long) d)
-            return String.format("%d",(long)d);
+    private String fmt(double d) {
+        if (d == (long) d)
+            return String.format("%d", (long) d);
         else
-            return String.format("%s",d);
+            return String.format("%s", d);
     }
 
     /**
      * Scales the matrix
+     *
      * @param scale
      * @return scaled version of the matrix
      */

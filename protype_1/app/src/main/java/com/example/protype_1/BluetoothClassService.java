@@ -1,24 +1,21 @@
 package com.example.protype_1;
 
-import android.app.PendingIntent;
 import android.app.Service;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
-import android.bluetooth.BluetoothManager;
 import android.bluetooth.BluetoothSocket;
-import android.content.Context;
 import android.content.Intent;
 import android.os.Binder;
-import android.os.Handler;
 import android.os.IBinder;
-import android.support.v4.app.NotificationCompat;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import android.widget.Toast;
 
-import java.io.*;
-import java.util.UUID;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.Arrays;
+import java.util.UUID;
 
 public class BluetoothClassService extends Service {
     private static final int NOTIF_ID = 1;
@@ -42,32 +39,28 @@ public class BluetoothClassService extends Service {
     public boolean connected = false;
 
     /**
-     *
-     * @param message
-     * This fuction broadcasts the information recieved from the server
-     *
+     * @param message This fuction broadcasts the information recieved from the server
      */
     public void sendResult(String message) {
         Intent intent = new Intent(RPI_RESULT);
-        if(message != null)
+        if (message != null)
             intent.putExtra(RPI_MESSAGE, message);
         broadcaster.sendBroadcast(intent);
     }
 
     /**
-     *
-     * @param message
-     * This fuction broadcasts the information recieved from the server
+     * @param message This fuction broadcasts the information recieved from the server
      */
     public void sendResult(byte[] message) {
         Intent intent = new Intent(RPI_RESULT);
-        if(message != null)
+        if (message != null)
             intent.putExtra(RPI_MESSAGE_BYTES, message);
         broadcaster.sendBroadcast(intent);
     }
 
     /**
      * This function initializes the bluetooth client
+     *
      * @return
      */
     public boolean initialize() {
@@ -91,7 +84,7 @@ public class BluetoothClassService extends Service {
         broadcaster = LocalBroadcastManager.getInstance(this);
         stopThread = false;
         Log.d("BLuetoothClassicService", "Service started");
-        Toast.makeText(getApplicationContext(), "BL Classic Service started ",Toast.LENGTH_LONG).show();
+        Toast.makeText(getApplicationContext(), "BL Classic Service started ", Toast.LENGTH_LONG).show();
     }
 
     @Override
@@ -111,7 +104,6 @@ public class BluetoothClassService extends Service {
         }
         Log.d("SERVICE", "onDestroy");
     }
-
 
 
     @Override
@@ -136,7 +128,7 @@ public class BluetoothClassService extends Service {
 
     public int onStartCommand(Intent intent, int flags, int startId) {
         Log.d("BT SERVICE", "SERVICE STARTED");
-        Toast.makeText(getApplicationContext(), "onStart Executed ",Toast.LENGTH_LONG).show();
+        Toast.makeText(getApplicationContext(), "onStart Executed ", Toast.LENGTH_LONG).show();
         return super.onStartCommand(intent, flags, startId);
     }
 
@@ -157,11 +149,8 @@ public class BluetoothClassService extends Service {
 //    }
 
     /**
-     *
      * @param address
-     * @return
-     *
-     * This function allows the client to connect to the server with the
+     * @return This function allows the client to connect to the server with the
      * give mac address
      */
     public boolean connect(final String address) {
@@ -176,31 +165,25 @@ public class BluetoothClassService extends Service {
             return false;
         }
         mBluetoothDeviceAddress = address;
-        if(checkBTState())
+        if (checkBTState())
             return true;
         else
             return false;
     }
 
     /**
-     *
-     * @param data
-     *
-     * This function sends a string data to the server
+     * @param data This function sends a string data to the server
      */
-    public void writeData(String data){
+    public void writeData(String data) {
         if (mConnectThread != null) {
             mConnectThread.write(data);
         }
     }
 
     /**
-     *
-     * @param data
-     *
-     * This function sends a byte value to the server
+     * @param data This function sends a byte value to the server
      */
-    public void writeData(byte data){
+    public void writeData(byte data) {
         if (mConnectThread != null) {
             mConnectThread.write(data);
         }
@@ -216,8 +199,8 @@ public class BluetoothClassService extends Service {
             if (mBluetoothAdapter.isEnabled()) {
                 Log.d("DEBUG BT", "BT ENABLED! BT ADDRESS : " + mBluetoothAdapter.getAddress() + " , BT NAME : " + mBluetoothAdapter.getName());
                 try {
-                    while((!connected) && (reConnect >= 0)){
-                        Toast.makeText(getApplicationContext(), "Trial: "+reConnect,Toast.LENGTH_LONG).show();
+                    while ((!connected) && (reConnect >= 0)) {
+                        Toast.makeText(getApplicationContext(), "Trial: " + reConnect, Toast.LENGTH_LONG).show();
                         BluetoothDevice device = mBluetoothAdapter.getRemoteDevice(mBluetoothDeviceAddress);
                         Log.d("DEBUG BT", "ATTEMPTING TO CONNECT TO REMOTE DEVICE : " + mBluetoothAdapter);
                         mConnectThread = new ConnectThread(device);
@@ -251,10 +234,10 @@ public class BluetoothClassService extends Service {
      * This class manages the bluetooth connection.
      */
     private class ConnectThread extends Thread {
-        private  InputStream mmInStream;
-        private  OutputStream mmOutStream;
-        private  BluetoothSocket mmSocket;
-        private  BluetoothDevice mmDevice;
+        private InputStream mmInStream;
+        private OutputStream mmOutStream;
+        private BluetoothSocket mmSocket;
+        private BluetoothDevice mmDevice;
 
         public ConnectThread(BluetoothDevice device) {
             Log.d("DEBUG BT", "IN CONNECTING THREAD");
@@ -272,15 +255,13 @@ public class BluetoothClassService extends Service {
                 stopThread = true;
                 stopSelf();
             }
-            Toast.makeText(getApplicationContext(),"Socket ID: "+temp,Toast.LENGTH_LONG).show();
+            Toast.makeText(getApplicationContext(), "Socket ID: " + temp, Toast.LENGTH_LONG).show();
 
-            if(mmSocket != null && mmSocket.isConnected()) {
+            if (mmSocket != null && mmSocket.isConnected()) {
                 connected = true;
                 //reConnect = 0;
                 Connected(mmSocket);
-            }
-            else
-            {
+            } else {
                 if (mmSocket != null)
                     cancel();
                 connected = false;
@@ -328,17 +309,16 @@ public class BluetoothClassService extends Service {
                 try {
                     bytes = mmInStream.read(buffer);            //read bytes from input buffer
 
-                    if(mmInStream.available() <= 0) {
-                        if((new String(getBytes(buffer,bytes), 0, bytes)).equals("END")) {
+                    if (mmInStream.available() <= 0) {
+                        if ((new String(getBytes(buffer, bytes), 0, bytes)).equals("END")) {
                             write("EOF");
-                            end ++;
-                        }
-                        else {
+                            end++;
+                        } else {
                             mmOutStream.write((byte) 1);
                             end = 0;
                         }
                     }
-                    if(end <= 1) {
+                    if (end <= 1) {
                         byte[] toSend = getBytes(buffer, bytes);
                         sendResult(toSend);
                     }
@@ -351,7 +331,7 @@ public class BluetoothClassService extends Service {
             }
         }
 
-        public void write(byte i){
+        public void write(byte i) {
             try {
                 mmOutStream.flush();
                 mmOutStream.write(i);                //write bytes over BT connection via outstream
@@ -380,7 +360,7 @@ public class BluetoothClassService extends Service {
             //toSend = "";
         }
 
-        public byte[] getBytes(byte[] in, int size){
+        public byte[] getBytes(byte[] in, int size) {
             return Arrays.copyOfRange(in, 0, size);
 
         }
@@ -388,8 +368,8 @@ public class BluetoothClassService extends Service {
         public void closeStreams() {
             try {
                 //Don't leave Bluetooth sockets open when leaving activity
-                if(mmInStream != null
-                && mmOutStream != null) {
+                if (mmInStream != null
+                        && mmOutStream != null) {
                     mmInStream.close();
                     mmOutStream.close();
                 }
@@ -402,7 +382,6 @@ public class BluetoothClassService extends Service {
         }
     }
     //////////////////////////////////////////////////////////////////
-
 
 
     // New Class for Connecting Thread
@@ -526,8 +505,6 @@ public class BluetoothClassService extends Service {
         }
 
 
-
-
         //write method
         public void write(String input) {
             byte[] msgBuffer = input.getBytes();           //converts entered String into bytes
@@ -555,7 +532,6 @@ public class BluetoothClassService extends Service {
             }
         }
     }
-
 
 
 }

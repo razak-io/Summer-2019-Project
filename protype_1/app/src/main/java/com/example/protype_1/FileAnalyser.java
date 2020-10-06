@@ -2,6 +2,7 @@ package com.example.protype_1;
 
 
 import com.badlogic.audio.io.WaveDecoder;
+
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -12,10 +13,8 @@ public class FileAnalyser {
     private final float MAX_VALUE = 1.0f / Short.MAX_VALUE;
 
     /**
-     *
      * @param sourceFile
-     * @return
-     * Seperates the audio data into two channels
+     * @return Seperates the audio data into two channels
      */
     public double[][] split(File sourceFile) {
         byte sample[] = new byte[2];
@@ -45,12 +44,9 @@ public class FileAnalyser {
     }
 
     /**
-     *
-      * @param left
+     * @param left
      * @param right
-     * @return
-     *
-     * Takes two arrays and converts then to a matix (2 x N matrix)
+     * @return Takes two arrays and converts then to a matix (2 x N matrix)
      */
     private double[][] retLeftnRight(byte[] left, byte[] right) {
         byte[][] toret1 = new byte[2][left.length - 22];
@@ -78,28 +74,24 @@ public class FileAnalyser {
     }
 
     /**
-     *
      * @param input
-     * @return
-     *
-     * Converts a byte array to a float array
+     * @return Converts a byte array to a float array
      */
     public float[] byteToFloat(byte[] input) {
         float[] ret = new float[input.length / 2];
         for (int x = 0; x < input.length; x += 2) {
-            int temp = (input[x]  & 0xff);
+            int temp = (input[x] & 0xff);
             temp |= (input[x + 1] & 0xff) << 8;
-            ret[x / 2] = ((short)temp * MAX_VALUE)/1;
+            ret[x / 2] = ((short) temp * MAX_VALUE) / 1;
         }
 
         return ret;
     }
 
     /**
-     *
      * @param sourceFile
      * @return array of audio data
-     *
+     * <p>
      * Returns the data in the audio file
      */
     public double[] getFileData(File sourceFile) {
@@ -155,13 +147,10 @@ public class FileAnalyser {
 //    }
 
     /**
-     *
      * @param in
-     * @return
-     *
-     * Checks if the content of the byte is a header
+     * @return Checks if the content of the byte is a header
      */
-    public boolean check(ArrayList<Byte> in){
+    public boolean check(ArrayList<Byte> in) {
         return ((in.get(0) == 100)
                 && (in.get(1) == 97)
                 && (in.get(2) == 116)
@@ -170,14 +159,11 @@ public class FileAnalyser {
     }
 
     /**
-     *
      * @param in
-     * @param data
-     *
-     * Adds data to in.
+     * @param data Adds data to in.
      */
-    public void add(ArrayList<Byte> in, byte[] data){
-        if (in.size() == 4){
+    public void add(ArrayList<Byte> in, byte[] data) {
+        if (in.size() == 4) {
             in.remove(0);
             in.remove(0);
         }
@@ -186,11 +172,8 @@ public class FileAnalyser {
     }
 
     /**
-     *
      * @param arr
-     * @return
-     *
-     * converts a Float to a double array
+     * @return converts a Float to a double array
      */
     private double[] convtodouble(ArrayList<Float> arr) {
         double[] ret = new double[arr.size()];
@@ -202,11 +185,8 @@ public class FileAnalyser {
     }
 
     /**
-     *
      * @param arr
-     * @return
-     *
-     * converts a float array to a double array
+     * @return converts a float array to a double array
      */
     private double[] convtodouble(float[] arr) {
         double[] ret = new double[arr.length];
@@ -218,11 +198,8 @@ public class FileAnalyser {
     }
 
     /**
-     *
      * @param arr
-     * @param samples
-     *
-     * Adds the data in an array to a List
+     * @param samples Adds the data in an array to a List
      */
     private void addtoList(ArrayList<Float> arr, float[] samples) {
         for (int i = 0; i < samples.length; i++) {

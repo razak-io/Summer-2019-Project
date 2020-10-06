@@ -1,21 +1,26 @@
 package com.example.protype_1;
+
 import org.jtransforms.fft.DoubleFFT_1D;
-import java.util.*;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.LinkedList;
+import java.util.Queue;
 
 /**
- *
  * @author murta
  */
 public class Signal {
 
     private averaging ma;
 
-    public Signal(){
-        ma = new averaging(44100/2);
+    public Signal() {
+        ma = new averaging(44100 / 2);
     }
 
     /**
      * calculates the mean of the signal
+     *
      * @param signal
      * @return mean
      */
@@ -30,6 +35,7 @@ public class Signal {
 
     /**
      * calculates the energy of the signal
+     *
      * @param signal
      * @return energy value
      */
@@ -43,6 +49,7 @@ public class Signal {
 
     /**
      * calculates the power of the signal
+     *
      * @param signal
      * @return power value
      */
@@ -51,7 +58,6 @@ public class Signal {
     }
 
     /**
-     *
      * @param signal
      * @return
      */
@@ -61,6 +67,7 @@ public class Signal {
 
     /**
      * finds minimum value
+     *
      * @param signal
      * @return minimum value
      */
@@ -74,6 +81,7 @@ public class Signal {
 
     /**
      * finds maximum value
+     *
      * @param signal
      * @return maximum value
      */
@@ -87,20 +95,22 @@ public class Signal {
 
     /**
      * method that downsamples the signal
+     *
      * @param scale
      * @return a double array of the downsampled signal
      */
-    public double[] downsampleSig(double[] signal, int scale){
+    public double[] downsampleSig(double[] signal, int scale) {
         //System.out.println("Initial Size of halfsec: "+halfsec);
-        double[] res = new double[(signal.length/scale)];
-        for(int i = 0; i < (res.length); i+= 1)
-            res[i] = signal[i*scale];
+        double[] res = new double[(signal.length / scale)];
+        for (int i = 0; i < (res.length); i += 1)
+            res[i] = signal[i * scale];
 
         return res;
     }
 
     /**
      * scales the signal
+     *
      * @param signal
      * @param scale
      */
@@ -112,6 +122,7 @@ public class Signal {
 
     /**
      * applys fft on the signal
+     *
      * @param ddata
      * @return array containing the results of the fft
      */
@@ -125,6 +136,7 @@ public class Signal {
 
     /**
      * finds the amplitude of fft values of the signal
+     *
      * @param ddata
      * @return array of amplitudes
      */
@@ -134,14 +146,15 @@ public class Signal {
 
     /**
      * calculates the power spectrum density of the signal
+     *
      * @param ddata
      * @return array of PSD values
      */
     public double[] getPSD(double[] ddata) {
-        double[] xf =  absComplex(doFFT(ddata));
+        double[] xf = absComplex(doFFT(ddata));
         double[] pd = new double[xf.length];
 
-        for(int i = 0; i < xf.length;i++){
+        for (int i = 0; i < xf.length; i++) {
             pd[i] = (xf[i] * xf[i]);
 
         }
@@ -160,14 +173,15 @@ public class Signal {
     }
 
     /**
-     *  finds the absolute of all elements in an array
+     * finds the absolute of all elements in an array
+     *
      * @param input
      * @return array of absolute value of all entries in array
      */
     public double[] abs(double[] input) {
         double amplitude[] = new double[input.length];
         for (int i = 0; i < input.length; i += 2) {
-            amplitude[i] =Math.abs(input[i]);
+            amplitude[i] = Math.abs(input[i]);
         }
         return amplitude;
     }
@@ -194,7 +208,7 @@ public class Signal {
      * @param input an array containing unfiltered input data
      * @return a double array containing the filtered data
      */
-    public double[] smoothen(double[] input){
+    public double[] smoothen(double[] input) {
         return ma.smoothen(input);
     }
 
@@ -275,7 +289,7 @@ class averaging {
 
         double min = Double.MAX_VALUE;
         double max = -Double.MAX_VALUE;
-        System.out.println("Initial max is "+max);
+        System.out.println("Initial max is " + max);
         double maxpos = 0, minpos = 0;
         boolean lookformax = true;
         for (int i = 0; i < in.length; i++) {

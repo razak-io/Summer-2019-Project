@@ -16,11 +16,9 @@ public class Ins3Activity extends AppCompatActivity {
     }
 
     /**
-     *
-     * @param View
-     * Go to next paired devices page (Executed when "NEXT" is clicked)
+     * @param View Go to next paired devices page (Executed when "NEXT" is clicked)
      */
-    public void ins3_actions (View View) {
+    public void ins3_actions(View View) {
         String button_text;
         button_text = ((Button) View).getText().toString();
 

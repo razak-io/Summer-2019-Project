@@ -17,11 +17,9 @@ public class Ins2Activity extends AppCompatActivity {
     }
 
     /**
-     *
-     * @param View
-     * Go to next instruction page (Executed when "NEXT" is clicked)
+     * @param View Go to next instruction page (Executed when "NEXT" is clicked)
      */
-    public void ins2_actions (View View) {
+    public void ins2_actions(View View) {
         String button_text;
         button_text = ((Button) View).getText().toString();
 

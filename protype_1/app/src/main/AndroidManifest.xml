@@ -1,15 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.protype_1">
-    <uses-permission android:name="android.permission.BLUETOOTH"/>
-    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN"/>
+
+    <uses-permission android:name="android.permission.BLUETOOTH" />
+    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
-    <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
-    <uses-feature android:name="android.hardware.bluetooth_le" android:required="true"/>
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+
+    <uses-feature
+        android:name="android.hardware.bluetooth_le"
+        android:required="true" />
 
     <application
         android:allowBackup="true"
@@ -18,7 +22,8 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".MainActivity"
+        <activity
+            android:name=".MainActivity"
             android:launchMode="singleTop"
             android:label="@string/app_name">
             <intent-filter>
@@ -28,7 +33,8 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".featureActivity"
+        <activity
+            android:name=".featureActivity"
             android:launchMode="singleTop"
             android:label="Setting Up"
             android:parentActivityName=".MainActivity">
@@ -39,7 +45,8 @@
         </activity>
 
 
-        <activity android:name=".feature1Activity"
+        <activity
+            android:name=".feature1Activity"
             android:launchMode="singleTop"
             android:label="Setting Up"
             android:parentActivityName=".featureActivity">
@@ -49,7 +56,8 @@
                 android:value=".featureActivity" />
         </activity>
 
-        <activity android:name=".ScanActivity"
+        <activity
+            android:name=".ScanActivity"
             android:launchMode="singleTop"
             android:label="Paired Devices"
             android:parentActivityName=".Ins3Activity">
@@ -60,7 +68,8 @@
         </activity>
 
 
-        <activity android:name=".Ins1Activity"
+        <activity
+            android:name=".Ins1Activity"
             android:launchMode="singleTop"
             android:label="Instruction"
             android:parentActivityName=".feature1Activity">
@@ -70,7 +79,8 @@
                 android:value=".feature1Activity" />
         </activity>
 
-        <activity android:name=".Ins2Activity"
+        <activity
+            android:name=".Ins2Activity"
             android:launchMode="singleTop"
             android:label="Instruction"
             android:parentActivityName=".Ins1Activity">
@@ -80,7 +90,8 @@
                 android:value=".Ins1Activity" />
         </activity>
 
-        <activity android:name=".Ins3Activity"
+        <activity
+            android:name=".Ins3Activity"
             android:launchMode="singleTop"
             android:label="Instruction"
             android:parentActivityName=".Ins2Activity">
@@ -90,7 +101,8 @@
                 android:value=".Ins2Activity" />
         </activity>
 
-        <activity android:name=".ConnectActivity"
+        <activity
+            android:name=".ConnectActivity"
             android:launchMode="singleTop"
             android:label="Analysis"
             android:parentActivityName=".ScanActivity">
@@ -100,7 +112,8 @@
                 android:value=".ScanActivity" />
         </activity>
 
-        <activity android:name=".RecordActivity"
+        <activity
+            android:name=".RecordActivity"
             android:launchMode="singleTop"
             android:label="Record"
             android:parentActivityName=".ConnectActivity">
@@ -110,7 +123,8 @@
                 android:value=".ConnectActivity" />
         </activity>
 
-        <activity android:name=".SpectrumActivity"
+        <activity
+            android:name=".SpectrumActivity"
             android:launchMode="singleTop"
             android:label="Spectrum"
             android:parentActivityName=".ConnectActivity">
@@ -120,7 +134,7 @@
                 android:value=".ConnectActivity" />
         </activity>
 
-        <service android:name=".BluetoothClassService"/>
+        <service android:name=".BluetoothClassService" />
 
     </application>
 

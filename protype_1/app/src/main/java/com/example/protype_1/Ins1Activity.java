@@ -16,11 +16,9 @@ public class Ins1Activity extends AppCompatActivity {
     }
 
     /**
-     *
-     * @param View
-     * Go to next instruction page (Executed when "NEXT" is clicked)
+     * @param View Go to next instruction page (Executed when "NEXT" is clicked)
      */
-    public void ins1_actions (View View) {
+    public void ins1_actions(View View) {
         String button_text;
         button_text = ((Button) View).getText().toString();
 
@@ -34,7 +32,6 @@ public class Ins1Activity extends AppCompatActivity {
                 break;
 
             case "Skip":
-                //startActivity(new Intent(this, TestActivity.class));
                 break;
 
             default:

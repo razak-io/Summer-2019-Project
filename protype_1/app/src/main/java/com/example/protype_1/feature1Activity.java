@@ -22,7 +22,7 @@ import java.util.List;
 public class feature1Activity extends AppCompatActivity implements AdapterView.OnItemSelectedListener {
     Button b1;
     EditText ed1;
-    Spinner spinner1,spinner2,spinner3,spinner4;
+    Spinner spinner1, spinner2, spinner3, spinner4;
     boolean valid_entries = false;
     public static int prof_num = 1;
     String profile = "Profile";
@@ -39,8 +39,8 @@ public class feature1Activity extends AppCompatActivity implements AdapterView.O
     /**
      * Initializes elements on feature 2 page
      */
-    private void initViews(){
-        ed1  =  (EditText) findViewById(R.id.hours_of_sleep);
+    private void initViews() {
+        ed1 = (EditText) findViewById(R.id.hours_of_sleep);
         spinner1 = (Spinner) findViewById(R.id.spinner_drive);
         spinner2 = (Spinner) findViewById(R.id.spinner_snore2);
         spinner3 = (Spinner) findViewById(R.id.spinner_rate);
@@ -79,7 +79,8 @@ public class feature1Activity extends AppCompatActivity implements AdapterView.O
         List<String> categories1 = new ArrayList<String>();
         categories1.clear();
         //categories.add("");
-        categories1.add("Yes");categories1.add("No");
+        categories1.add("Yes");
+        categories1.add("No");
         ArrayAdapter<String> dataAdapter3 = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, categories1);
         // Drop down layout style - list view with radio button
         dataAdapter3.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -89,7 +90,9 @@ public class feature1Activity extends AppCompatActivity implements AdapterView.O
         List<String> categories2 = new ArrayList<String>();
         categories2.clear();
         //categories.add("");
-        for(int i = 0; i < 6; i++){categories2.add(""+i);}
+        for (int i = 0; i < 6; i++) {
+            categories2.add("" + i);
+        }
         ArrayAdapter<String> dataAdapter4 = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, categories2);
         // Drop down layout style - list view with radio button
         dataAdapter4.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -100,16 +103,16 @@ public class feature1Activity extends AppCompatActivity implements AdapterView.O
     }
 
 
-//////EDIT HERE//////////////////////////////////////////////////
+    //////EDIT HERE//////////////////////////////////////////////////
     private void read(View view) {
         try {
-            FileInputStream fileInputStream= openFileInput("profile");
+            FileInputStream fileInputStream = openFileInput("profile");
             InputStreamReader inputStreamReader = new InputStreamReader(fileInputStream);
             BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
             StringBuffer stringBuffer = new StringBuffer();
             String lines;
-            while ((lines=bufferedReader.readLine())!=null) {
-                stringBuffer.append(lines+"\n");
+            while ((lines = bufferedReader.readLine()) != null) {
+                stringBuffer.append(lines + "\n");
             }
             //textView.setText(stringBuffer.toString());
         } catch (FileNotFoundException e) {
@@ -121,12 +124,10 @@ public class feature1Activity extends AppCompatActivity implements AdapterView.O
 ////////////////////////////////////////////////////////////////////
 
     /**
-     *
-     * @return
-     * Method that checks if all features have been entered correctly
+     * @return Method that checks if all features have been entered correctly
      */
-    private boolean check(){
-        if(ed1.getText().toString().length() == 0){
+    private boolean check() {
+        if (ed1.getText().toString().length() == 0) {
             ed1.setError("Input Hours of Sleep");
             return false;
         }
@@ -135,13 +136,11 @@ public class feature1Activity extends AppCompatActivity implements AdapterView.O
     }
 
     /**
-     *
-     * @param View
-     * Go to next Analysis page (Executed when "NEXT" is clicked)
+     * @param View Go to next Analysis page (Executed when "NEXT" is clicked)
      */
-    public void to_ins (View View) {
+    public void to_ins(View View) {
         //if all entries
-        if(check())
+        if (check())
             startActivity(new Intent(this, Ins1Activity.class));
     }
 
@@ -150,7 +149,7 @@ public class feature1Activity extends AppCompatActivity implements AdapterView.O
     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
         // On selecting a spinner item
         String item = parent.getItemAtPosition(position).toString();
-        if(item.equals("")) {
+        if (item.equals("")) {
             Toast.makeText(parent.getContext(), "Please Make a Valid Selection " + item, Toast.LENGTH_LONG).show();
         }
 

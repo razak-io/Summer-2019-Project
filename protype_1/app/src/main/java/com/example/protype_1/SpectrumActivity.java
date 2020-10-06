@@ -6,6 +6,7 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.widget.ImageView;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -17,9 +18,9 @@ public class SpectrumActivity extends AppCompatActivity {
     private ImageView spec;
     private double[] toplot;
     private double[][] plot;
-    double max ;
+    double max;
     double min;
-    private int h,w;
+    private int h, w;
     private ProgressDialog progress;
 
     @Override
@@ -35,7 +36,7 @@ public class SpectrumActivity extends AppCompatActivity {
         max = getMaxValue(toplot);
         min = getMinValue(toplot);
 
-        plot = stretch(ret_non_Zero(toTwoDimension(toplot,h,w)));
+        plot = stretch(ret_non_Zero(toTwoDimension(toplot, h, w)));
         drawSpectrum();
         stop_process();
 
@@ -43,10 +44,10 @@ public class SpectrumActivity extends AppCompatActivity {
 
     /**
      * method that displays a progress dialog
-     * @param msg
      *
+     * @param msg
      */
-    public void start_process(String msg){
+    public void start_process(String msg) {
         progress.setMessage(msg);
         progress.setProgressStyle(ProgressDialog.STYLE_SPINNER);
         progress.setIndeterminate(true);
@@ -58,20 +59,19 @@ public class SpectrumActivity extends AppCompatActivity {
     /**
      * Closes any open progess dialogs
      */
-    public void stop_process(){
+    public void stop_process() {
         progress.dismiss();
     }
 
     /**
      * checks if all entries in an array are zeros
+     *
      * @param in
      * @return
-     *
-     *
      */
-    private boolean zeros(double [] in){
-        for (int i = 0; i < in.length ; i++){
-            if(in[i] != 0)
+    private boolean zeros(double[] in) {
+        for (int i = 0; i < in.length; i++) {
+            if (in[i] != 0)
                 return false;
         }
         return true;
@@ -79,21 +79,22 @@ public class SpectrumActivity extends AppCompatActivity {
 
     /**
      * finds all the non zero rows in a matrix
+     *
      * @param in
      * @return matrix of non zero rows
      */
-    private double[][] ret_non_Zero(double[][] in){
+    private double[][] ret_non_Zero(double[][] in) {
         ArrayList<Integer> index = new ArrayList<Integer>();
         int count = 0;
-        for(int i = 0; i < in.length; i++){
-            if(!zeros(in[i])) {
+        for (int i = 0; i < in.length; i++) {
+            if (!zeros(in[i])) {
                 count++;
                 index.add(i);
             }
         }
         double[][] ret = new double[count][in[0].length];
-        for(int i =0; i < ret.length; i++){
-            ret[i] = Arrays.copyOf(in[index.get(i)],in[0].length);
+        for (int i = 0; i < ret.length; i++) {
+            ret[i] = Arrays.copyOf(in[index.get(i)], in[0].length);
         }
 
         w = ret[0].length;
@@ -104,20 +105,19 @@ public class SpectrumActivity extends AppCompatActivity {
 
     /**
      * stretches an image
+     *
      * @param mat
      * @return array containing the stretched image
-     *
-     *
      */
-    private double[][] stretch(double[][] mat){
-        int index = w/h;
+    private double[][] stretch(double[][] mat) {
+        int index = w / h;
         h = h * index;
-        double[][] new_mat = new  double[h][w];
+        double[][] new_mat = new double[h][w];
 
-        for(int i = 0; i < new_mat.length;i++){
+        for (int i = 0; i < new_mat.length; i++) {
 
-            for(int j = 0; j < new_mat[0].length;j++){
-                new_mat[i][j] = mat[i/index][j];
+            for (int j = 0; j < new_mat[0].length; j++) {
+                new_mat[i][j] = mat[i / index][j];
 
             }
         }
@@ -137,10 +137,9 @@ public class SpectrumActivity extends AppCompatActivity {
 
     /**
      * finds the maximum value
+     *
      * @param array
      * @return the maximum value
-     *
-     *
      */
     private double getMaxValue(double[] array) {
         double maxValue = array[0];
@@ -154,9 +153,9 @@ public class SpectrumActivity extends AppCompatActivity {
 
     /**
      * finds the minimum value
+     *
      * @param array
      * @return the minimum value
-     *
      */
     private double getMinValue(double[] array) {
         double minValue = array[0];
@@ -171,18 +170,17 @@ public class SpectrumActivity extends AppCompatActivity {
     /**
      * converts a matrix to an image
      */
-    public void drawSpectrum(){
+    public void drawSpectrum() {
 
         //define the array size
         int[] rgbValues;
         ;
         rgbValues = new int[plot.length * plot[0].length];
 
-        for(int i=0; i < h; i++)
-        {
-            for(int j=0; j < w; j++) {
-                double alph = ((plot[i][j] - getMinValue(plot[i]))/(getMaxValue(plot[i]) - getMinValue(plot[i])));
-                int c = Color.argb((int)((alph) * 255), 0, 0, 0);
+        for (int i = 0; i < h; i++) {
+            for (int j = 0; j < w; j++) {
+                double alph = ((plot[i][j] - getMinValue(plot[i])) / (getMaxValue(plot[i]) - getMinValue(plot[i])));
+                int c = Color.argb((int) ((alph) * 255), 0, 0, 0);
                 rgbValues[i * w + j] = c;
 
             }
@@ -194,28 +192,27 @@ public class SpectrumActivity extends AppCompatActivity {
 
     /**
      * concerts a 1D array to a 2D array (matrix)
+     *
      * @param input
      * @param row
      * @param col
      * @return a 2D representation of the 1D array
-     *
+     * <p>
      * concerts a 1D array to a 2D array (matrix)
      */
-    private double[][] toTwoDimension(double[] input, int row, int col){
+    private double[][] toTwoDimension(double[] input, int row, int col) {
         double[][] output = new double[row][col];
         int count = 0;
-        for(int i = 0; i < row; i++){
-            for(int j = 0; j < col; j++){
+        for (int i = 0; i < row; i++) {
+            for (int j = 0; j < col; j++) {
                 output[i][j] = input[(i * col) + j];
-                if(input[(i * col) + j] != 0)
+                if (input[(i * col) + j] != 0)
                     count++;
             }
         }
 
         return output;
     }
-
-
 
 
 //    public void drawSpectrum(double[][] matrix){

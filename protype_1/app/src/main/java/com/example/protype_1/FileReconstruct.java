@@ -1,9 +1,14 @@
 package com.example.protype_1;
 
+import android.content.Context;
 import android.util.Log;
 
-import java.io.*;
-import android.content.Context;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
 
 public class FileReconstruct {
     public File file;
@@ -17,18 +22,17 @@ public class FileReconstruct {
     private String wav = ".wav";
 
 
-    public FileReconstruct(Context context,String pathtofile, boolean noise){
-        String filename =  context.getFilesDir() + "/"+pathtofile+wav;
-        String rfilename = context.getFilesDir() + "/"+pathtofile + "_right" + wav;
+    public FileReconstruct(Context context, String pathtofile, boolean noise) {
+        String filename = context.getFilesDir() + "/" + pathtofile + wav;
+        String rfilename = context.getFilesDir() + "/" + pathtofile + "_right" + wav;
         // check if file exist, otherwise create the file before writing
         try {
             file = new File(filename);
-            right_file = new File (rfilename);
+            right_file = new File(rfilename);
 
             if (!file.exists()) {
                 file.createNewFile();
-            }
-            else {
+            } else {
                 file.delete();
                 file.createNewFile();
             }
@@ -36,15 +40,14 @@ public class FileReconstruct {
             if (!file.canRead())
                 file.setReadable(true);
 
-        }
-        catch (Exception e){
+        } catch (Exception e) {
             Log.d("FR SERVICE", "UNABLE TO CREATE DATA FILE");
         }
 
         if (noise) {
 
-            filename = context.getFilesDir() + "/" + pathtofile + "_noise"+ wav;
-            rfilename = context.getFilesDir() + "/"+pathtofile + "_right_noise"+ wav;
+            filename = context.getFilesDir() + "/" + pathtofile + "_noise" + wav;
+            rfilename = context.getFilesDir() + "/" + pathtofile + "_right_noise" + wav;
             // check if file exist, otherwise create the file before writing
             try {
 
@@ -53,8 +56,7 @@ public class FileReconstruct {
 
                 if (!noise_file.exists()) {
                     noise_file.createNewFile();
-                }
-                else {
+                } else {
                     noise_file.delete();
                     noise_file.createNewFile();
                 }
@@ -69,20 +71,21 @@ public class FileReconstruct {
 
     }
 ////////////////////////////WAV FILE UPDATE AND CREATION//////////////////////////////////
+
     /**
      * Coverts a file to an array of bytes
      **/
-    private byte[] readFileToByteArray(File file){
+    private byte[] readFileToByteArray(File file) {
         FileInputStream fis = null;
         // Creating a byte array using the length of the file
         // file.length returns long which is cast to int
         byte[] bArray = new byte[(int) file.length()];
-        try{
+        try {
             fis = new FileInputStream(file);
             fis.read(bArray);
             fis.close();
 
-        }catch(IOException ioExp){
+        } catch (IOException ioExp) {
             ioExp.printStackTrace();
         }
         return bArray;
@@ -91,7 +94,7 @@ public class FileReconstruct {
     /**
      * Deletes all the files that were created
      **/
-    public void delete(){
+    public void delete() {
         file.delete();
         noise_file.delete();
         right_file.delete();
@@ -99,27 +102,34 @@ public class FileReconstruct {
     }
 
     /**
-     *  Update the size of the audio file after appending data to it
+     * Update the size of the audio file after appending data to it
      **/
-    private void updateFilesize(int size, File file){
+    private void updateFilesize(int size, File file) {
         int sizea = 0x00000000;
         int sizeb = 0x00000000;
         //byte
         byte[] data = readFileToByteArray(file);
         //int size = 44 +
-        sizea += data[7];       sizeb += data[43];
-        sizea = sizea << 8;     sizeb = sizeb << 8;
-        sizea += data[6];       sizeb += data[42];
-        sizea = sizea << 16;    sizeb = sizeb << 16;
-        sizea += data[5];       sizeb += data[41];
-        sizea = sizea << 24;    sizeb = sizeb << 24;
-        sizea += data[4];       sizeb += data[40];
+        sizea += data[7];
+        sizeb += data[43];
+        sizea = sizea << 8;
+        sizeb = sizeb << 8;
+        sizea += data[6];
+        sizeb += data[42];
+        sizea = sizea << 16;
+        sizeb = sizeb << 16;
+        sizea += data[5];
+        sizeb += data[41];
+        sizea = sizea << 24;
+        sizeb = sizeb << 24;
+        sizea += data[4];
+        sizeb += data[40];
 
         //System.out.println(String.format("Data[0]: 0x%08X, Data[1]: 0x%08X, Data[2]: 0x%08X, Data[3]: 0x%08X", data[0],data[1],data[2],data[3]));
         //System.out.println(String.format("SizeA: 0x%08X, SizeB: 0x%08X, Size of Data: 0x%08X", sizea,sizeb,size));
         //System.out.println(Arrays.toString(data));
         sizeb += size;
-        sizea = (sizeb + ((byte)36 & 0xFF));
+        sizea = (sizeb + ((byte) 36 & 0xFF));
 
         byte[] s = toByteArray(sizea);
         //System.out.println()
@@ -139,30 +149,28 @@ public class FileReconstruct {
     }
 
     /**
-     *  Converts an integer value to an array of bytes
+     * Converts an integer value to an array of bytes
      **/
     private byte[] toByteArray(int value) {
-        return new byte[] {
-                (byte)(value >> 24),
-                (byte)(value >> 16),
-                (byte)(value >> 8),
-                (byte)value };
+        return new byte[]{
+                (byte) (value >> 24),
+                (byte) (value >> 16),
+                (byte) (value >> 8),
+                (byte) value};
     }
 
     /**
      * Reconstruct the file after updating its content and file size
      **/
-    private void remakeFile(byte[] useThis, File file){
+    private void remakeFile(byte[] useThis, File file) {
         {
             try {
                 FileOutputStream fos = new FileOutputStream(file);
                 fos.write(useThis);
                 fos.close();
-            }
-            catch(FileNotFoundException ex)   {
+            } catch (FileNotFoundException ex) {
                 System.out.println("FileNotFoundException : " + ex);
-            }
-            catch(IOException ioe)  {
+            } catch (IOException ioe) {
                 System.out.println("IOException : " + ioe);
             }
 
@@ -171,75 +179,71 @@ public class FileReconstruct {
 
     /**
      * Append data to an exsisting file
-     * **/
-    public void appendWavdata(byte[] byteContent1, File file ){
+     **/
+    public void appendWavdata(byte[] byteContent1, File file) {
 
         OutputStream opStream = null;
         int size = byteContent1.length;
         try {
-        opStream = new FileOutputStream(file,true);
-        opStream.write(byteContent1);
-        opStream.flush();
-    } catch (IOException e) {
-        e.printStackTrace();
-    } finally{
-        try{
-            if(opStream != null) opStream.close();
-        } catch(Exception ex){
+            opStream = new FileOutputStream(file, true);
+            opStream.write(byteContent1);
+            opStream.flush();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (opStream != null) opStream.close();
+            } catch (Exception ex) {
 
+            }
         }
-    }
         updateFilesize(size, file);
     }
 
 
     /**
      * Append data to either the NOISE or BREATH file
-     * **/
+     **/
     public void append(byte[] buffer, int state) {
         //checkinfo(buffer);
 
-            switch (state) {
-                case (NOISE_UPDATE):
-                    appendWavdata(buffer, noise_file);
-                    Log.d("STATE DEBUG", "APPEND TO NOISE FILE");
-                    break;
-                case (DATA_UPDATE):
-                    appendWavdata(buffer, file);
-                    Log.d("STATE DEBUG", "APPEND TO DATA FILE");
-                    break;
-                default:
-                    break;
-            }
-
+        switch (state) {
+            case (NOISE_UPDATE):
+                appendWavdata(buffer, noise_file);
+                Log.d("STATE DEBUG", "APPEND TO NOISE FILE");
+                break;
+            case (DATA_UPDATE):
+                appendWavdata(buffer, file);
+                Log.d("STATE DEBUG", "APPEND TO DATA FILE");
+                break;
+            default:
+                break;
+        }
 
 
     }
 
 
-
-
     /**
      * Returns the NOISE or BREATH file depending on the state
-     * **/
+     **/
     public File getFile(int state) {
         if (state == NOISE_UPDATE) {
-            Log.d("DEBUG","RETURN NOISE FILE");
+            Log.d("DEBUG", "RETURN NOISE FILE");
             return noise_file;
 
         } else if (state == DATA_UPDATE) {
-            Log.d("DEBUG","RETURN BREATH FILE");
+            Log.d("DEBUG", "RETURN BREATH FILE");
             return file;
         } else {
-            Log.d("DEBUG","RETURN NULL FILE");
+            Log.d("DEBUG", "RETURN NULL FILE");
             return null;
         }
 
     }
 
 
-
- /////////////////////////TXT FILE UPDATE AND CREATION (USED FOR TESTING)//////////////////////////////////
+    /////////////////////////TXT FILE UPDATE AND CREATION (USED FOR TESTING)//////////////////////////////////
 
 //    public void appendTxtdata(byte[] byteContent1 ){
 //
@@ -352,7 +356,7 @@ public class FileReconstruct {
     //////////////////////////////////////UNUSED METHODS////////////////////////////////////////////////
 
 
-    private void checkinfo(byte[] buffer){
+    private void checkinfo(byte[] buffer) {
         try {
             String readMessage = new String(buffer, 0, buffer.length);
             if (readMessage.equals("NOISE"))
@@ -363,8 +367,7 @@ public class FileReconstruct {
                 which_file = NONE_UPDATE;
             else
                 which_file = which_file;
-        }
-        catch(Exception e){
+        } catch (Exception e) {
             Log.d("DEBUG FR", e.toString());
             Log.d("FR SERVICE", "UNABLE TO CONVERT TO STRING");
         }
@@ -373,7 +376,7 @@ public class FileReconstruct {
 
     public void append(byte[] buffer, int state, boolean left) {
         //checkinfo(buffer);
-        if (left){
+        if (left) {
             switch (state) {
                 case (NOISE_UPDATE):
                     appendWavdata(buffer, noise_file);
@@ -386,31 +389,28 @@ public class FileReconstruct {
                 default:
                     break;
             }
-    }
-    else
-    {
-        switch (state) {
-            case (NOISE_UPDATE):
-                appendWavdata(buffer, right_noise_file);
-                Log.d("STATE DEBUG", "APPEND TO NOISE FILE");
-                break;
-            case (DATA_UPDATE):
-                appendWavdata(buffer, right_file);
-                Log.d("STATE DEBUG", "APPEND TO DATA FILE");
-                break;
-            default:
-                break;
+        } else {
+            switch (state) {
+                case (NOISE_UPDATE):
+                    appendWavdata(buffer, right_noise_file);
+                    Log.d("STATE DEBUG", "APPEND TO NOISE FILE");
+                    break;
+                case (DATA_UPDATE):
+                    appendWavdata(buffer, right_file);
+                    Log.d("STATE DEBUG", "APPEND TO DATA FILE");
+                    break;
+                default:
+                    break;
+            }
+
         }
 
-    }
-
 
     }
 
-    public File getNoiseFile(){
+    public File getNoiseFile() {
         return noise_file;
     }
-
 
 
 }

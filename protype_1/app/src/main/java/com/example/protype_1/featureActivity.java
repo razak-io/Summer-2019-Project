@@ -42,13 +42,13 @@ public class featureActivity extends AppCompatActivity implements AdapterView.On
     /**
      * initializes elements on feature 1 page
      */
-    private void initViews(){
-        b1=(Button)findViewById(R.id.to_feat1);
-        ed1=(EditText)findViewById(R.id.l_name);
-        ed2=(EditText)findViewById(R.id.f_name);
-        ed3=(EditText)findViewById(R.id.age);
-        ed4=(EditText)findViewById(R.id.neck);
-        ed5=(EditText)findViewById(R.id.BMI);
+    private void initViews() {
+        b1 = (Button) findViewById(R.id.to_feat1);
+        ed1 = (EditText) findViewById(R.id.l_name);
+        ed2 = (EditText) findViewById(R.id.f_name);
+        ed3 = (EditText) findViewById(R.id.age);
+        ed4 = (EditText) findViewById(R.id.neck);
+        ed5 = (EditText) findViewById(R.id.BMI);
 
         // Spinner element
         Spinner spinner = (Spinner) findViewById(R.id.Gender);
@@ -71,35 +71,34 @@ public class featureActivity extends AppCompatActivity implements AdapterView.On
 
     /**
      * method that checks if all features have been entered correctly
-     *
      */
-    private boolean check(){
+    private boolean check() {
         boolean valid = true;
-        if(ed1.getText().toString().length() == 0){
+        if (ed1.getText().toString().length() == 0) {
             ed1.setError("Input Last Name");
             valid = false;
         }
 
 
-        if(ed2.getText().toString().length() == 0){
+        if (ed2.getText().toString().length() == 0) {
             ed2.setError("Input First Name");
             valid = false;
         }
 
 
-        if(ed3.getText().toString().length() == 0){
+        if (ed3.getText().toString().length() == 0) {
             ed3.setError("Input Valid Age");
             valid = false;
         }
 
 
-        if(ed4.getText().toString().length() == 0){
+        if (ed4.getText().toString().length() == 0) {
             ed4.setError("Input Valid Neck Size");
             valid = false;
         }
 
 
-        if(ed5.getText().toString().length() == 0){
+        if (ed5.getText().toString().length() == 0) {
             ed5.setError("Input Valid BMI");
             valid = false;
         }
@@ -108,16 +107,16 @@ public class featureActivity extends AppCompatActivity implements AdapterView.On
     }
 
 
-//////EDIT HERE//////////////////////////////////////////////////
+    //////EDIT HERE//////////////////////////////////////////////////
     private void read(View view) {
         try {
-            FileInputStream fileInputStream= openFileInput("profile");
+            FileInputStream fileInputStream = openFileInput("profile");
             InputStreamReader inputStreamReader = new InputStreamReader(fileInputStream);
             BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
             StringBuffer stringBuffer = new StringBuffer();
             String lines;
-            while ((lines=bufferedReader.readLine())!=null) {
-                stringBuffer.append(lines+"\n");
+            while ((lines = bufferedReader.readLine()) != null) {
+                stringBuffer.append(lines + "\n");
             }
             //textView.setText(stringBuffer.toString());
         } catch (FileNotFoundException e) {
@@ -130,14 +129,14 @@ public class featureActivity extends AppCompatActivity implements AdapterView.On
 
     /**
      * go to next feature page (Executed when "NEXT" is clicked)
-     * @param View
      *
+     * @param View
      */
-    public void to_feat1 (View View) {
+    public void to_feat1(View View) {
         //if all entries
-        if(check())
+        if (check())
             startActivity(new Intent(this, feature1Activity.class));
-   }
+    }
 
 
     @Override

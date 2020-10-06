@@ -1,19 +1,17 @@
 package com.example.protype_1;
 
 import android.annotation.TargetApi;
-import android.app.Activity;
 import android.app.ProgressDialog;
-import android.content.DialogInterface;
-import android.os.Bundle;
-import android.support.v4.content.LocalBroadcastManager;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
-import android.os.CountDownTimer;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
+import android.os.Bundle;
+import android.os.CountDownTimer;
 import android.os.IBinder;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
 import android.text.method.ScrollingMovementMethod;
 import android.view.Menu;
@@ -25,10 +23,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.concurrent.TimeUnit;
-
-import static java.lang.Thread.sleep;
 
 @TargetApi(18)
 public class ConnectActivity extends AppCompatActivity {
@@ -83,25 +78,25 @@ public class ConnectActivity extends AppCompatActivity {
         setContentView(R.layout.activity_connect);
         Bundle extras = getIntent().getExtras();
         state = HOLD_STATE;
-        if(extras !=null) {
+        if (extras != null) {
             mDeviceAddress = extras.getString(ConnectActivity.EXTRAS_DEVICE_ADDRESS);
         }
         initViews();
 
         calc = new SNR_Calculation();
         progress = new ProgressDialog(this);
-        newrecon = new FileReconstruct(getApplicationContext(),"Test_1",true);
+        newrecon = new FileReconstruct(getApplicationContext(), "Test_1", true);
         results.setMovementMethod(new ScrollingMovementMethod());
         int count = 0;
         receiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
                 byte[] a = intent.getByteArrayExtra(BluetoothClassService.RPI_MESSAGE_BYTES);
-                if((new String(a, 0, a.length)).equals("END")) {
+                if ((new String(a, 0, a.length)).equals("END")) {
                     results.append("\nSwitching to Hold State, End Signal Right\n ");
 
 
-                    if(state == BREATH_STATE){
+                    if (state == BREATH_STATE) {
                         //start_process("Analysing Signal");
                         calc.setData(newrecon.getFile(newrecon.NOISE_UPDATE), HOLD_STATE);
                         calc.setData(newrecon.getFile(newrecon.DATA_UPDATE), BREATH_STATE);
@@ -113,7 +108,7 @@ public class ConnectActivity extends AppCompatActivity {
                         //send.setClickable(true);
                     }
 
-                    if(state == HOLD_STATE){
+                    if (state == HOLD_STATE) {
                         state = BREATH_STATE;
                         updatemsg();
                         //send.setClickable(true);
@@ -123,25 +118,25 @@ public class ConnectActivity extends AppCompatActivity {
 
                     }
 
-                }
-                else {
+                } else {
                     newrecon.append(a, state);
                 }
             }
         };
-        gattServiceIntent = new Intent(this, BluetoothClassService.class);;
+        gattServiceIntent = new Intent(this, BluetoothClassService.class);
+        ;
         mBound = bindService(gattServiceIntent, mServiceConnection, BIND_AUTO_CREATE);
         progress = new ProgressDialog(this);
-        start_process("Connetcing to :) "+mDeviceAddress);
+        start_process("Connetcing to :) " + mDeviceAddress);
         initmsg();
     }
 
     /**
      * go to record page
-     * @param view
      *
+     * @param view
      */
-    public void to_record(View view){
+    public void to_record(View view) {
         Intent intent = new Intent(this, RecordActivity.class);
         intent.putExtra(ConnectActivity.EXTRAS_DEVICE_ADDRESS, mDeviceAddress);
         progress.dismiss();
@@ -150,7 +145,7 @@ public class ConnectActivity extends AppCompatActivity {
     }
 
     @Override
-    public void onResume(){
+    public void onResume() {
         mBound = bindService(gattServiceIntent, mServiceConnection, BIND_AUTO_CREATE);
         super.onResume();
 
@@ -173,17 +168,16 @@ public class ConnectActivity extends AppCompatActivity {
     /**
      * method makes the "NEXT" button visible
      */
-    private void show_next(){
+    private void show_next() {
         next.setVisibility(View.VISIBLE);
     }
 
     /**
      * method makes the "RESET" button visible
      */
-    private void show_reset(){
+    private void show_reset() {
         reset.setVisibility(View.VISIBLE);
     }
-
 
 
     @Override
@@ -198,24 +192,24 @@ public class ConnectActivity extends AppCompatActivity {
 
     /**
      * method that converts a double to a float
+     *
      * @param in
      * @return
-     *
      */
-    private float convtofloat(double in){
-        return Float.parseFloat(""+in);
+    private float convtofloat(double in) {
+        return Float.parseFloat("" + in);
     }
 
     /**
      * method that applys a low or high pass filter to the data values
+     *
      * @param freq
      * @param samplerate
      * @param pass
      * @param resonance
      * @param s
-     *
      */
-    private void filter(int freq, int samplerate, Filter.PassType pass, int resonance,double[] s){
+    private void filter(int freq, int samplerate, Filter.PassType pass, int resonance, double[] s) {
         Filter filter = new Filter(freq, samplerate, pass, resonance);
         for (int i = 0; i < s.length; i++) {
             filter.Update(convtofloat(s[i]));
@@ -232,15 +226,15 @@ public class ConnectActivity extends AppCompatActivity {
                 Intent spec = new Intent(this, SpectrumActivity.class);
                 File temp = newrecon.getFile(newrecon.DATA_UPDATE);
                 double[] da = (new FileAnalyser()).getFileData(temp);
-                filter(50,44100,Filter.PassType.Highpass, 1, da);
+                filter(50, 44100, Filter.PassType.Highpass, 1, da);
                 PSDAnalysis pd = (new PSDAnalysis(da));
                 pd.downsampleSig(20);
                 double[][] mat = pd.getSpec().getMatrix();
 
-                spec.putExtra("PLOT HEIGHT",mat.length);
-                spec.putExtra("PLOT WIDTH",mat[0].length);
+                spec.putExtra("PLOT HEIGHT", mat.length);
+                spec.putExtra("PLOT WIDTH", mat[0].length);
                 double[] oned = toOneDimension(mat);
-                spec.putExtra("TO PLOT",oned);
+                spec.putExtra("TO PLOT", oned);
                 startActivity(spec);
                 break;
             default:
@@ -250,13 +244,13 @@ public class ConnectActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    private double[][] stretch(double[][] mat){
-        double[][] new_mat = new  double[mat.length*50][mat[0].length];
+    private double[][] stretch(double[][] mat) {
+        double[][] new_mat = new double[mat.length * 50][mat[0].length];
 
-        for(int i = 0; i < new_mat.length;i++){
+        for (int i = 0; i < new_mat.length; i++) {
 
-            for(int j = 0; j < new_mat[0].length;j++){
-                new_mat[i][j] = mat[i/50][j];
+            for (int j = 0; j < new_mat[0].length; j++) {
+                new_mat[i][j] = mat[i / 50][j];
 
             }
         }
@@ -267,14 +261,14 @@ public class ConnectActivity extends AppCompatActivity {
 
     /**
      * method to convert a 2D array to a 1D array
+     *
      * @param input
      * @return
-     *
      */
-    private double[] toOneDimension(double[][] input){
+    private double[] toOneDimension(double[][] input) {
         double[] output = new double[input.length * input[0].length];
-        for(int i = 0; i < input.length; i++){
-            for(int j = 0; j < input[i].length; j++){
+        for (int i = 0; i < input.length; i++) {
+            for (int j = 0; j < input[i].length; j++) {
                 output[(i * input[0].length) + j] = input[i][j];
             }
         }
@@ -285,10 +279,10 @@ public class ConnectActivity extends AppCompatActivity {
 
     /**
      * method that displays a progress dialog
-     * @param msg
      *
+     * @param msg
      */
-    public void start_process(String msg){
+    public void start_process(String msg) {
         progress.setMessage(msg);
         progress.setProgressStyle(ProgressDialog.STYLE_SPINNER);
         progress.setIndeterminate(true);
@@ -298,10 +292,9 @@ public class ConnectActivity extends AppCompatActivity {
     }
 
     /**
-     *
      * method that clears any open progress dialog
      */
-    public void stop_process(){
+    public void stop_process() {
         progress.dismiss();
         process_start = false;
     }
@@ -309,21 +302,19 @@ public class ConnectActivity extends AppCompatActivity {
 
     /**
      * method to displays the result of the Signal Processing
-     * @param snr_value
      *
+     * @param snr_value
      */
-    private void updateSNR(double[] snr_value){
-        SNR_L.setText(""+snr_value[0]);
-        SNR_T.setText(""+snr_value[1]);
+    private void updateSNR(double[] snr_value) {
+        SNR_L.setText("" + snr_value[0]);
+        SNR_T.setText("" + snr_value[1]);
 
-        if (snr_value[1] > 2){
+        if (snr_value[1] > 2) {
             snrstate = GOOD_SNR;
-        }
-        else
+        } else
             snrstate = BAD_SNR;
 
     }
-
 
 
     @Override
@@ -344,7 +335,7 @@ public class ConnectActivity extends AppCompatActivity {
         LocalBroadcastManager.getInstance(this).unregisterReceiver(receiver);
         if (mBluetoothLeService.connected)
             mBluetoothLeService.writeData("Exit");
-        if(mBound) {
+        if (mBound) {
             stopService(gattServiceIntent);
             unbindService(mServiceConnection);
             mBound = false;
@@ -357,21 +348,19 @@ public class ConnectActivity extends AppCompatActivity {
         public void onServiceConnected(ComponentName componentName, IBinder service) {
             mBluetoothLeService = ((BluetoothClassService.LocalBinder) service).getService();
             if (!mBluetoothLeService.initialize()) {
-                Toast.makeText(getApplicationContext(), "BL Classic Service Failed ",Toast.LENGTH_LONG).show();
+                Toast.makeText(getApplicationContext(), "BL Classic Service Failed ", Toast.LENGTH_LONG).show();
                 finish();
             }
 
-            if(!mBluetoothLeService.connect(mDeviceAddress)) {
-                Toast.makeText(getApplicationContext(), "Connection Failed ",Toast.LENGTH_LONG).show();
+            if (!mBluetoothLeService.connect(mDeviceAddress)) {
+                Toast.makeText(getApplicationContext(), "Connection Failed ", Toast.LENGTH_LONG).show();
                 //mBound = bindService(gattServiceIntent, mServiceConnection, BIND_AUTO_CREATE);
                 //start_process("Reconnecting ");
 
                 //finish();
-            }
-            else
-            {
+            } else {
                 progress.dismiss();
-                Toast.makeText(getApplicationContext(), "Connection Successful ",Toast.LENGTH_LONG).show();
+                Toast.makeText(getApplicationContext(), "Connection Successful ", Toast.LENGTH_LONG).show();
             }
         }
 
@@ -385,12 +374,12 @@ public class ConnectActivity extends AppCompatActivity {
 
     /**
      * method which sends commands to the server
-     * @param view
      *
+     * @param view
      */
-    public void sendCmd(View view){
+    public void sendCmd(View view) {
 
-        switch(state) {
+        switch (state) {
             case (HOLD_STATE):
                 startStop();
                 mBluetoothLeService.writeData("ANALYSIS");
@@ -409,7 +398,7 @@ public class ConnectActivity extends AppCompatActivity {
     /**
      * method which makes "NEXT" and "RESET" buttons invisible
      */
-    private void clear_button(){
+    private void clear_button() {
         reset.setVisibility(View.GONE);
         next.setVisibility(View.GONE);
     }
@@ -418,9 +407,8 @@ public class ConnectActivity extends AppCompatActivity {
      * method to restarts the analysis
      *
      * @param view
-     *
      */
-    public void reset(View view){
+    public void reset(View view) {
         textViewTime.setText("00");
         state = HOLD_STATE;
         snrstate = -1;
@@ -437,19 +425,19 @@ public class ConnectActivity extends AppCompatActivity {
     /**
      * method to set initial instructions
      */
-    private void initmsg(){
+    private void initmsg() {
         results.setText("Hold Breath for 6 seconds");
     }
 
     /**
      * method for providing user with instructions on how to use the app
      */
-    private void updatemsg(){
-        switch(state){
-            case(HOLD_STATE):
+    private void updatemsg() {
+        switch (state) {
+            case (HOLD_STATE):
                 results.setText("Hold Breath for 6 seconds");
                 break;
-            case(BREATH_STATE):
+            case (BREATH_STATE):
                 results.setText("Breath In and Out Continuously for 6 seconds");
                 break;
             default:
@@ -480,12 +468,11 @@ public class ConnectActivity extends AppCompatActivity {
 
     }
 
-    public void test(View view){
-        if(!press) {
+    public void test(View view) {
+        if (!press) {
             mBluetoothLeService.writeData((byte) 2);
             press = !press;
-        }
-        else{
+        } else {
             mBluetoothLeService.writeData("STOPTRANSMIT");
             press = !press;
         }
@@ -496,8 +483,8 @@ public class ConnectActivity extends AppCompatActivity {
     /**
      * Method for providing user with feed back based on SNR value
      */
-    private void snrmsg(){
-        switch(snrstate) {
+    private void snrmsg() {
+        switch (snrstate) {
             case (GOOD_SNR):
                 results.setText("Signal is Good! Click 'NEXT' to Proceed");
                 show_next();
@@ -516,10 +503,9 @@ public class ConnectActivity extends AppCompatActivity {
         }
 
 
-
     }
 
-    private void sendStop(){
+    private void sendStop() {
         mBluetoothLeService.writeData("STOPTRANSMIT");
     }
 
@@ -529,12 +515,10 @@ public class ConnectActivity extends AppCompatActivity {
         startCountDownTimer();
     }
 
-    public void st(View view){
+    public void st(View view) {
         setTimerValues();
         startStop();
     }
-
-
 
 
     /**
@@ -542,7 +526,7 @@ public class ConnectActivity extends AppCompatActivity {
      */
     private void setTimerValues() {
         double time = 0;
-        switch(state){
+        switch (state) {
             case HOLD_STATE:
                 time = 0.1;
                 textViewTime.setText("06");
@@ -557,7 +541,7 @@ public class ConnectActivity extends AppCompatActivity {
                 break;
         }
         // assigning values after converting to milliseconds
-        timeCountInMilliSeconds = (int)(time * 60 * 1000);
+        timeCountInMilliSeconds = (int) (time * 60 * 1000);
     }
 
     /**
@@ -565,22 +549,23 @@ public class ConnectActivity extends AppCompatActivity {
      */
     int tup = 0;
     boolean timeup = false;
+
     private void startCountDownTimer() {
 
         countDownTimer = new CountDownTimer(timeCountInMilliSeconds, 1000) {
             @Override
             public void onTick(long millisUntilFinished) {
-                textViewTime.setText(hmsTimeFormatter(millisUntilFinished).substring(6,8));
+                textViewTime.setText(hmsTimeFormatter(millisUntilFinished).substring(6, 8));
                 progressBarCircle.setProgress((int) (millisUntilFinished / 1000));
             }
 
             @Override
             public void onFinish() {
-                textViewTime.setText(hmsTimeFormatter(timeCountInMilliSeconds).substring(6,8));
+                textViewTime.setText(hmsTimeFormatter(timeCountInMilliSeconds).substring(6, 8));
                 setProgressBarValues();
                 timerStatus = TimerStatus.STOPPED;
 
-                if(!timeup) {
+                if (!timeup) {
                     mBluetoothLeService.writeData("TIMEUP");
                     if (state == HOLD_STATE)
                         start_process("Recieveing Data From Device");
@@ -630,8 +615,6 @@ public class ConnectActivity extends AppCompatActivity {
 
 
     }
-
-
 
 
 }
